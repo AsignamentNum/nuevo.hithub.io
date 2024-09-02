@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Operativo Web - Numerales</title>
+    <style>
+        /* Estilos CSS */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #os-container {
+            width: 360px;
+            height: 640px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #status-bar {
+            height: 30px;
+            background-color: #333;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+        }
+
+        #menu-bar {
+            height: 50px;
+            background-color: #444;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        #menu-bar button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #main-screen {
+            flex-grow: 1;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .numeral-row {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            margin: 10px 0;
+        }
+
+        .numeral-button {
+            width: 50px;
+            height: 50px;
+            background-color: #ccc;
+            border-radius: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        #footer {
+            height: 50px;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+    </style>
+    <link rel="manifest" href="data:application/manifest+json,">
+</head>
+<body>
+    <div id="os-container">
+        <!-- Barra de estado -->
+        <div id="status-bar">
+            <span id="battery">100%</span>
+            <span id="time">14:30</span>
+        </div>
+
+        <!-- Barra de menú superior -->
+        <div id="menu-bar">
+            <button id="assign-number">Asignar Número</button>
+            <button id="clear-assignments">Limpiar Asignaciones</button>
+        </div>
+
+        <!-- Pantalla principal -->
+        <div id="main-screen">
+            <div class="numeral-row">
+                <div class="numeral-button" data-number="1">1</div>
+                <div class="numeral-button" data-number="2">2</div>
+                <div class="numeral-button" data-number="3">3</div>
+            </div>
+            <div class="numeral-row">
+                <div class="numeral-button" data-number="4">4</div>
+                <div class="numeral-button" data-number="5">5</div>
+                <div class="numeral-button" data-number="6">6</div>
+            </div>
+        </div>
+
+        <!-- Pie de página -->
+        <div id="footer">© Tu Sistema Operativo Web</div>
+    </div>
+
+    <script>
+        // Objeto para almacenar las asignaciones de números
+        const numberAssignments = {};
+
+        // Función para asignar un número de teléfono a un botón numerado
+        function assignPhoneNumber() {
+            const number = prompt("Ingrese el número del botón (1-6):");
+            if (number < 1 || number > 6 || isNaN(number)) {
+                alert("Número no válido. Debe ser entre 1 y 6.");
+                return;
+            }
+
+            const phoneNumber = prompt("Ingrese el número de teléfono a asignar:");
+            if (phoneNumber) {
+                numberAssignments[number] = phoneNumber;
+                alert(`Número ${phoneNumber} asignado al botón ${number}.`);
+            }
+        }
+
+        // Función para limpiar las asignaciones
+        function clearAssignments() {
+            for (let key in numberAssignments) {
+                delete numberAssignments[key];
+            }
+            alert("Todas las asignaciones han sido limpiadas.");
+        }
+
+        // Asociar eventos a los botones del menú
+        document.getElementById('assign-number').addEventListener('click', assignPhoneNumber);
+        document.getElementById('clear-assignments').addEventListener('click', clearAssignments);
+
+        // Función para manejar el clic en los botones numerales
+        document.querySelectorAll('.numeral-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const number = this.getAttribute('data-number');
+                if (numberAssignments[number]) {
+                    alert(`Marcando el número: ${numberAssignments[number]}`);
+                } else {
+                    alert("No hay un número asignado a este botón.");
+                }
+            });
+        });
+
+        // Registrar el Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:application/javascript,')
+                .then(() => console.log('Service Worker registrado'))
+                .catch(err => console.error('Error al registrar el Service Worker:', err));
+        }
+    </script>
+
+    <script type="application/json">
+    {
+        "name": "Sistema Operativo Web",
+        "short_name": "SO Web",
+        "start_url": "index.html",
+        "display": "standalone",
+        "background_color": "#f0f0f0",
+        "theme_color": "#333",
+        "icons": [
+            {
+                "src": "icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/javascript">
+        const CACHE_NAME = 'pwa-cache-v1';
+        const urlsToCache = [
+            'index.html',
+            'manifest.json',
+            'icon-192.png',
+            'icon-512.png',
+            'service-worker.js'
+            // Agrega otros archivos que deban ser cacheados
+        ];
+
+        self.addEventListener('install', event => {
+            event.waitUntil(
+                caches.open(CACHE_NAME)
+                    .then(cache => {
+                        console.log('Archivos cacheados');
+                        return cache.addAll(urlsToCache);
+                    })
+            );
+        });
+
+        self.addEventListener('fetch', event => {
+            event.respondWith(
+                caches.match(event.request)
+                    .then(response => {
+                        return response || fetch(event.request);
+                    })
+            );
+        });
+    </script>
+</body>
+</html>
